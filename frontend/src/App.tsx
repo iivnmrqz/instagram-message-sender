@@ -90,6 +90,15 @@ export default function InstagramMessageSender() {
     }
   }
 
+  const handleLogout = () => {
+    setIsLoggedIn(false)
+    setFormData(prev => ({
+      ...prev,
+      username: '',
+      password: ''
+    }))
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md">
@@ -127,7 +136,8 @@ export default function InstagramMessageSender() {
                 <MessageForm 
                   formData={formData} 
                   onInputChange={handleInputChange} 
-                  onSubmit={handleSubmit} 
+                  onSubmit={handleSubmit}
+                  onLogout={handleLogout}
                 />
               )}
             </>

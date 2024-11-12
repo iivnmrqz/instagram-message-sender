@@ -4,6 +4,7 @@ export interface FormProps {
   formData: FormData
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
   onSubmit: (e: React.FormEvent) => void
+  onLogout?: () => void
 }
 
 export interface ApiModeFormProps {

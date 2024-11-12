@@ -3,8 +3,18 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import type { FormProps } from "@/types"
 
-export const MessageForm = ({ formData, onInputChange, onSubmit }: FormProps) => (
+export const MessageForm = ({ formData, onInputChange, onSubmit, onLogout }: FormProps) => (
   <form onSubmit={onSubmit} className="space-y-4">
+    <div className="flex justify-end">
+      <Button 
+        type="button" 
+        variant="outline" 
+        onClick={onLogout}
+        size="sm"
+      >
+        Logout
+      </Button>
+    </div>
     <div className="space-y-2">
       <Input
         id="recipient"
