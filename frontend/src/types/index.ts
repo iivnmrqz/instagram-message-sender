@@ -28,7 +28,8 @@ export interface InstagramMessage {
   }
   
   export interface ApiError {
+    success: boolean
     message: string
-    status: number
+    status?: number
     code?: string
   } 

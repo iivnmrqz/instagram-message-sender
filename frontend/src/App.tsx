@@ -30,7 +30,31 @@ export default function InstagramMessageSender() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoggedIn(true)
+    setSubmitError(null)
+    
+    try {
+      await apiClient.post('/instagram/login', {
+        username: formData.username,
+        password: formData.password
+      })
+      setIsLoggedIn(true)
+    } catch (error: unknown) {
+      if (typeof error === 'object' && error !== null && 'success' in error && !error.success && 'message' in error && typeof error.message === 'string') {
+        setSubmitError(error.message)
+        if (error.message.includes('check credentials')) {
+          setIsLoggedIn(false)
+          setFormData(prev => ({
+            ...prev,
+            username: '',
+            password: ''
+          }))
+        }
+      } else if (error instanceof Error) {
+        setSubmitError(error.message)
+      } else {
+        setSubmitError('An unexpected error occurred')
+      }
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,8 +64,18 @@ export default function InstagramMessageSender() {
     try {
       await apiClient.post('/instagram/send-message', formData)
       setFormData(prev => ({ ...prev, message: '' }))
-    } catch (error) {
-      if (error instanceof Error) {
+    } catch (error: unknown) {
+      if (typeof error === 'object' && error !== null && 'success' in error && !error.success && 'message' in error && typeof error.message === 'string') {
+        setSubmitError(error.message)
+        if (error.message.toLowerCase().includes('credentials')) {
+          setIsLoggedIn(false)
+          setFormData(prev => ({
+            ...prev,
+            username: '',
+            password: ''
+          }))
+        }
+      } else if (error instanceof Error) {
         setSubmitError(error.message)
       } else {
         setSubmitError('An unexpected error occurred')

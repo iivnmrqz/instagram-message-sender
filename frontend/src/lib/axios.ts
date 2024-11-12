@@ -19,6 +19,7 @@ const handleResponse = <T>(response: AxiosResponse): ApiResponse<T> => {
 const handleError = (error: Error | AxiosError): never => {
   if (axios.isAxiosError(error)) {
     const apiError: ApiError = {
+      success: false,
       message: error.response?.data?.message || 'An unexpected error occurred',
       status: error.response?.status || 500,
       code: error.code
