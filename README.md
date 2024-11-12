@@ -11,18 +11,6 @@ A full-stack application that enables sending Instagram messages through a web i
 - Error handling and user feedback
 - Responsive UI with shadcn/ui components
 
-## 🏗 Project Structure
-
-instagram-message-sender/
-├── frontend/ # React + TypeScript frontend
-│ ├── src/
-│ │ ├── components/ # UI components
-│ │ ├── lib/ # Utilities and schemas
-│ │ └── types/ # TypeScript definitions
-└── backend/ # Node.js + Express backend
-├── routes/ # API endpoints
-└── queries/ # Instagram automation queries
-
 ## 🚀 Backend Setup
 
 ### Prerequisites
