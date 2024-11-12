@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from 'axios'
-import type { ApiError, ApiResponse } from './types/api'
+import type { ApiError, ApiResponse } from '@/types'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,

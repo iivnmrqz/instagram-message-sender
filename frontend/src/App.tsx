@@ -1,23 +1,16 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from "./components/ui/button"
-import { Input } from "./components/ui/input"
-import { Textarea } from "./components/ui/textarea"
-import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card"
-import { Switch } from "./components/ui/switch"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Switch } from "@/components/ui/switch"
+import { ErrorContainer } from "@/components/ui/error-container"
+import { LoginForm } from "@/components/forms/LoginForm"
+import { MessageForm } from "@/components/forms/MessageForm"
+import { ApiForm } from "@/components/forms/ApiForm"
 import { InstagramMessageSchema } from '@/lib/schemas'
 import { ZodError } from 'zod'
-import { ErrorContainer } from "./components/ui/error-container"
-import { cn } from "@/lib/utils"
-import apiClient from './lib/axios'
-
-interface FormData {
-  username: string
-  password: string
-  recipient: string
-  message: string
-}
+import apiClient from '@/lib/axios'
+import type { FormData } from '@/types'
 
 export default function InstagramMessageSender() {
   const [isApiMode, setIsApiMode] = useState(false)
@@ -29,6 +22,7 @@ export default function InstagramMessageSender() {
     message: ''
   })
   const [jsonError, setJsonError] = useState<string | null>(null)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const handleInputChange = ({ target: { name, value } }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData(prevData => ({ ...prevData, [name]: value }))
@@ -41,8 +35,18 @@ export default function InstagramMessageSender() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    await apiClient.post('/send-message', formData)
+    setSubmitError(null)
+    
+    try {
+      await apiClient.post('/instagram/send-message', formData)
+      setFormData(prev => ({ ...prev, message: '' }))
+    } catch (error) {
+      if (error instanceof Error) {
+        setSubmitError(error.message)
+      } else {
+        setSubmitError('An unexpected error occurred')
+      }
+    }
   }
 
   const handleApiInput = (jsonInput: string) => {
@@ -103,8 +107,9 @@ export default function InstagramMessageSender() {
         </CardHeader>
 
         <CardContent>
+          {submitError && <ErrorContainer error={submitError} />}
           {isApiMode ? (
-            <ApiModeForm 
+            <ApiForm 
               onApiInput={handleApiInput} 
               formData={formData}
               handleApiSubmit={handleSubmit}
@@ -132,89 +137,3 @@ export default function InstagramMessageSender() {
     </div>
   )
 }
-
-interface FormProps {
-  formData: FormData
-  onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
-  onSubmit: (e: React.FormEvent) => void
-}
-
-export const LoginForm = ({ formData, onInputChange, onSubmit }: FormProps) => (
-  <form onSubmit={onSubmit} className="space-y-4">
-    <div className="space-y-2">
-      <Input
-        id="username"
-        name="username"
-        type="text"
-        placeholder="Username"
-        value={formData.username}
-        onChange={onInputChange}
-      />
-      <Input
-        id="password"
-        name="password"
-        type="password"
-        placeholder="Password"
-        value={formData.password}
-        onChange={onInputChange}
-      />
-    </div>
-    <Button type="submit" className="w-full">Login</Button>
-  </form>
-)
-
-const MessageForm = ({ formData, onInputChange, onSubmit }: FormProps) => (
-  <form onSubmit={onSubmit} className="space-y-4">
-    <div className="space-y-2">
-      <Input
-        id="recipient"
-        name="recipient"
-        type="text"
-        placeholder="Recipient Username"
-        value={formData.recipient}
-        onChange={onInputChange}
-      />
-      <Textarea
-        id="message"
-        name="message"
-        placeholder="Your message"
-        rows={4}
-        value={formData.message}
-        onChange={onInputChange}
-      />
-    </div>
-    <Button type="submit" className="w-full">Send Message</Button>
-  </form>
-)
-
-interface ApiModeFormProps {
-  onApiInput: (value: string) => void
-  formData: FormData
-  handleApiSubmit: (e: React.FormEvent) => void
-  jsonError: string | null
-}
-
-export const ApiModeForm = ({ onApiInput, formData, handleApiSubmit, jsonError }: ApiModeFormProps & { jsonError: string | null }) => (
-  <form onSubmit={(e) => handleApiSubmit(e)} className="space-y-4">
-    <div className="space-y-2">
-      <Textarea
-        id="apiInput"
-        rows={8}
-        placeholder="Paste JSON here"
-        onChange={(e) => onApiInput(e.target.value)}
-        className={cn(jsonError && "border-red-500 focus-visible:ring-red-500")}
-      />
-      <ErrorContainer error={jsonError} />
-    </div>
-    <pre className="bg-gray-100 p-4 rounded-md text-sm overflow-x-auto">
-      {JSON.stringify(formData, null, 2)}
-    </pre>
-    <Button 
-      type="submit" 
-      className="w-full"
-      disabled={!!jsonError}
-    >
-      Send Message
-    </Button>
-  </form>
-)

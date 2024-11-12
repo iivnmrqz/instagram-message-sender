@@ -10,7 +10,7 @@ export const ErrorContainer = ({ error, className }: ErrorContainerProps) => {
 
   return (
     <div className={cn(
-      "p-3 text-sm text-red-500 bg-red-50 border border-red-200 rounded-md",
+      "mb-2 p-3 text-sm text-red-500 bg-red-50 border border-red-200 rounded-md",
       className
     )}>
       {error}
